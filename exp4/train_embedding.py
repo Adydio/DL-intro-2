@@ -5,7 +5,7 @@ import numpy as np
 import argparse
 from torch.utils.data import Dataset, DataLoader
 
-# 1. Data loading and preprocessing
+
 print("Step 1: Data loading and preprocessing...")
 
 
@@ -30,7 +30,6 @@ class StockDataset(Dataset):
         return torch.tensor(self.data[idx], dtype=torch.float), torch.tensor(self.labels[idx], dtype=torch.float)
 
 
-# 2. LSTM model definition
 print("Step 2: LSTM model definition...")
 
 
@@ -45,14 +44,12 @@ class LSTMModel(nn.Module):
         return self.fc(out).squeeze(-1)
 
 
-# Custom loss function
 def custom_loss(outputs, labels, alpha):
     mse_loss = nn.MSELoss()(outputs, labels)
     rank_loss = torch.sum(torch.max(torch.zeros_like(outputs) - (outputs - outputs.t()) * (labels - labels.t())))
     return mse_loss + alpha * rank_loss
 
 
-# 3. Training script
 print("Step 3: Training script...")
 
 
@@ -71,9 +68,6 @@ def train(model, dataloader, criterion, optimizer, alpha, num_epochs):
     torch.save(model.state_dict(), "/output/lstm_embedding_model.pth")
 
 
-# 4. Command line arguments parsing
-print("Step 4: Command line arguments parsing...")
-
 parser = argparse.ArgumentParser()
 parser.add_argument('--embedding_size', type=int, default=8, help='Size of the embeddings')
 parser.add_argument('--alpha', type=float, default=1.0, help='Weight for the ranking loss')
@@ -81,17 +75,15 @@ parser.add_argument('--epochs', type=int, default=10, help='Epochs')
 parser.add_argument('--lr', type=float, default=0.001, help='Learning Rate')
 args = parser.parse_args()
 
-# Main script
+
 if __name__ == '__main__':
     dataset = StockDataset("/data/dyk2021/QuantContest/train_standard.csv")
     dataloader = DataLoader(dataset, batch_size=1, shuffle=True)
     input_size = dataset[0][0].size(1)
     model = LSTMModel(input_size, args.embedding_size)
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
-
     print("Training the LSTM model...")
     train(model, dataloader, custom_loss, optimizer, args.alpha, num_epochs=args.epochs)
-
     print("Generating embeddings for each stock_id...")
     embeddings = {}
     model.eval()
@@ -99,6 +91,5 @@ if __name__ == '__main__':
         for stock_id, (data, _) in zip(dataset.stock_ids, dataset):
             _, (hn, _) = model.lstm(data.unsqueeze(0))
             embeddings[stock_id] = hn[-1].squeeze().numpy()
-
     print("Saving embeddings dictionary...")
     np.save('/output/embeddings_dict.npy', embeddings)
