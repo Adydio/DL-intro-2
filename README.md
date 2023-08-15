@@ -11,8 +11,6 @@ model2训练的代码在exp3文件夹中，目前得到的一些特征向量比�
 - 去掉有缺失值的行；
 - 再对0-299号匿名特征做z-score归一化，并且记录每一号特征的均值和方差，记录在字典中并保存在/output文件夹中。
 
-- 
-
 ### Network_1
 
 对于stock2vec这种embedding，我看到常见的做法是LSTM，具体的实现细节尚不明晰。我觉得我搜到的一篇文章（恰好是中科大的paper）的做法有一定参考价值，链接在这[论文](https://arxiv.org/pdf/1809.09441.pdf)，对应的[github仓库](https://github.com/fulifeng/Temporal_Relational_Stock_Ranking)，b站视频链接[在这](https://www.bilibili.com/video/BV1a54y1o77U)，根据b站评论区，这个LSTM模型是训练好的，然后把每个股票的时序信息喂进去取最后一个隐藏状态。论文片段如下：
@@ -26,6 +24,14 @@ model2训练的代码在exp3文件夹中，目前得到的一些特征向量比�
 ### Network_2
 
 见`network2.md`，简言之进展不佳。但是捣腾许久综合来看搞这个network必要性并不是很大。下次更新时详细说明这一点，后续可能会做一些network1或者其他的工作。
+
+- 均值都很接近零，反应不了什么问题；
+- 目前我看到的资料都是将time_id作为时序信息，相当于在network1中就用到了，况且最终检验的一些time_id还是我们训练集没有的。
+
+### Network_4
+
+我找过不少资料，我认为损失函数的选择可以使用MSE+$\alpha$排名损失。在上面的同一篇论文中的描述如下：
+![](./img/3.png)
 
 ## 一些点：
 
