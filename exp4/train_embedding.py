@@ -13,12 +13,13 @@ class StockDataset(Dataset):
     def __init__(self, data_path):
         df = pd.read_csv(data_path)
         df = df.dropna()
+        df = df.drop_duplicates(keep='first')
         self.stock_ids = df['stock_id'].unique()
         self.data = []
         self.labels = []
         for stock_id in self.stock_ids:
             stock_data = df[df['stock_id'] == stock_id].sort_values(by='time_id')
-            features = stock_data.iloc[:, 2:-1].values
+            features = stock_data.iloc[:, 3:-1].values
             label = stock_data['label'].values
             self.data.append(features)
             self.labels.append(label)
