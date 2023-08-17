@@ -2,18 +2,20 @@
 
 最新进展：修复了昨天训练代码中的一个小问题。昨天在读入`train_standard.csv`出了问题导致特征向量长的很怪。现在自己处理好的维数为8、16的版本是较为推荐使用的。由于得到的特征普遍值较小，可以考虑先做L2标准化再使用。我读那篇论文的代码包括调用了他的sequence扔进LSTM后的输出，论文的embedding貌似是64维的，可以供参考。
 
-| embedding size | loss     | path                               | description            |
-| -------------- | -------- | ---------------------------------- | ---------------------- |
-| 8              | 0.001170 | `./output/ep10em8alpha0standard`   | 训练集经过标准化处理   |
-| 8              | 0.001178 | `./output/ep10em8alpha0origin`     | 训练集没经过标准化处理 |
-| 16             | 0.001149 | `./output/ep10em16alpha0ver1`      | 训练集经过标准化处理   |
-| 16             | 0.001136 | `./output/ep10em16alpha0origin`    | 训练集没经过标准化处理 |
-| 32             | 0.001149 | `./output/ep10em32alpha0standard`  | 训练集经过标准化处理   |
-| 32             | 0.001127 | `./output/ep10em32alpha0origin`    | 训练集没经过标准化处理 |
-| 64             | 0.001181 | `./output/ep10em64alpha0standard`  | 训练集经过标准化处理   |
-| 64             | 0.001175 | `./output/ep10em64alpha0origin`    | 训练集没经过标准化处理 |
-| 128            | 0.001368 | `./output/ep10em128alpha0standard` | 训练集经过标准化处理   |
-| 128            | 0.001322 | `./output/ep10em128alpha0origin`   | 训练集没经过标准化处理 |
+| embedding size | loss     | layers | path                                    | 训练集是否标准化 |
+| -------------- | -------- | ------ | --------------------------------------- | ---------------- |
+| 8              | 0.001170 | 1      | `./output/ep10em8alpha0standard`        | 是               |
+| 8              | 0.001178 | 1      | `./output/ep10em8alpha0origin`          | 否               |
+| 16             | 0.001149 | 1      | `./output/ep10em16alpha0ver1`           | 是               |
+| 16             | 0.001136 | 1      | `./output/ep10em16alpha0origin`         | 否               |
+| 32             | 0.001149 | 1      | `./output/ep10em32alpha0standard`       | 是               |
+| 32             | 0.001127 | 1      | `./output/ep10em32alpha0origin`         | 否               |
+| 64             | 0.001181 | 1      | `./output/ep10em64alpha0standard`       | 是               |
+| 64             | 0.001175 | 1      | `./output/ep10em64alpha0origin`         | 否               |
+| 128            | 0.001368 | 1      | `./output/ep10em128alpha0standard`      | 是               |
+| 128            | 0.001322 | 1      | `./output/ep10em128alpha0origin`        | 否               |
+| 64             | 0.001047 | 2      | `./output/ep10em64alpha0layer2standard` | 是               |
+| 64             | 0.001027 | 2      | `./output/ep10em64alpha0layer2origin`   | 否               |
 
 训练的原理是给LSTM喂一串某一特定stock_id的序列数据得到“所有时间步到该时间步为止的输入序列的信息编码”集合，在用一个全连接层得到预测。训练文件运行起来现在比较成熟了，不过这样的训练方式不见得靠谱，我也没能想到别的方式，网上见到的例子都是针对一只股票的，这里的情况股票多特征也多确实（对我来讲）不好处理。
 

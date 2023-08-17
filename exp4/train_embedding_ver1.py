@@ -10,7 +10,7 @@ print("Step 1: Data loading and preprocessing...")
 
 
 class StockDataset(Dataset):
-    def __init__(self, data_path):
+    def __init__(self, data_path, n):
         df = pd.read_csv(data_path)
         df = df.dropna()
         df = df.drop_duplicates(keep='first')
@@ -19,7 +19,10 @@ class StockDataset(Dataset):
         self.labels = []
         for stock_id in self.stock_ids:
             stock_data = df[df['stock_id'] == stock_id].sort_values(by='time_id')
-            features = stock_data.iloc[:, 3:-1].values
+            if n == 1:
+                features = stock_data.iloc[:, 3:-1].values
+            else:
+                features = stock_data.iloc[:, 2:-1].values
             label = stock_data['label'].values
             self.data.append(features)
             self.labels.append(label)
@@ -35,9 +38,9 @@ print("Step 2: LSTM model definition...")
 
 
 class LSTMModel(nn.Module):
-    def __init__(self, input_size, hidden_size):
+    def __init__(self, input_size, hidden_size, num_layers):
         super(LSTMModel, self).__init__()
-        self.lstm = nn.LSTM(input_size, hidden_size, batch_first=True)
+        self.lstm = nn.LSTM(input_size, hidden_size, num_layers=num_layers, batch_first=True)
         self.fc = nn.Linear(hidden_size, 1)
 
     def forward(self, x):
@@ -74,14 +77,19 @@ parser.add_argument('--embedding_size', type=int, default=8, help='Size of the e
 parser.add_argument('--alpha', type=float, default=1.0, help='Weight for the ranking loss')
 parser.add_argument('--epochs', type=int, default=10, help='Epochs')
 parser.add_argument('--lr', type=float, default=0.001, help='Learning Rate')
+parser.add_argument('--num_layers', type=int, default=1, help='Number of layers')
+parser.add_argument('--standard', type=int, default=1, help='1 or 0')
 args = parser.parse_args()
 
 
 if __name__ == '__main__':
-    dataset = StockDataset("/data/dyk2021/QuantContest/train_standard.csv")
+    if args.standard == 1:
+        dataset = StockDataset("/data/dyk2021/QuantContest/train_standard.csv", args.standard)
+    else:
+        dataset = StockDataset("/data/dyk2021/QuantContest/train.csv", args.standard)
     dataloader = DataLoader(dataset, batch_size=1, shuffle=True)
     input_size = dataset[0][0].size(1)
-    model = LSTMModel(input_size, args.embedding_size)
+    model = LSTMModel(input_size, args.embedding_size, num_layers=args.num_layers)
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
     print("Training the LSTM model...")
     train(model, dataloader, custom_loss, optimizer, args.alpha, num_epochs=args.epochs)
