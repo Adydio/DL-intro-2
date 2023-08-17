@@ -8,6 +8,6 @@ def read_dict(path):
         data = json.load(file)
     normalized_data = {}
     for key, value in data.items():
-        normalized_vector = np.array(value) / np.linalg.norm(value, 2)  # L2 normalization
-        normalized_data[int(key)] = normalized_vector.tolist()  # Convert numpy array back to list
+        normalized_vector = np.array(value) / np.linalg.norm(value, 2)
+        normalized_data[int(key)] = normalized_vector.tolist()
     return normalized_data
