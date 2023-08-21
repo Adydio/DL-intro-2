@@ -23,6 +23,7 @@
 | 64             | 0.000850 | 3      | `./output/ep20em64alpha0layer3standard` | 是               |
 | 64             | 0.000849 | 3      | `./output/ep20em64alpha0layer3origin`   | 否               |
 | 64             | 0.000772 | 3      | `./output/ep30em64alpha0layer3origin`   | 否               |
+| **64(random erasing)** | 0.000687 | 3 | `./output/re-30-64-3-standard` | 是 |
 | 64(random erasing)| 0.000765 | 3      | `./output/re-30-64-3-origin`            | 否               |
 
 训练的原理是给LSTM喂一串某一特定stock_id的序列数据得到“所有时间步到该时间步为止的输入序列的信息编码”集合，在用一个全连接层得到预测。训练文件运行起来现在比较成熟了，不过这样的训练方式不见得靠谱，我也没能想到别的方式，网上见到的例子都是针对一只股票的，这里的情况股票多特征也多确实（对我来讲）不好处理。
