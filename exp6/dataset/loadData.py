@@ -10,10 +10,8 @@ def to_table(df, num):
     第二维为离散化后的 stock
     第三维为数据维
     --------
-
-    如果不含 label，那么将返回一个元组表示 (T, I, X, msk)，分别表示 time_id, stock_id, 特征, 选定的特征以及该状态是否存在
+    如果不含 label，那么将返回一个元组表示 (T, I, X, X_selected, msk)，分别表示 time_id, stock_id, 特征, 选定的特征以及该状态是否存在
     如果 df 中包含 label，那么将额外返回 label
-
     对于不存在的数据将以全零填充
     '''
     selected_features_init = featureSelector.feature_selector(num)
@@ -54,7 +52,7 @@ def to_table(df, num):
     else:
         len_features = df.columns
 
-    X, X_features = X[:, :, : len_features], X[:, :, len_features:]
+    X, X_selected = X[:, :, : len_features], X[:, :, len_features:]
     # 填充 T
     for i in range(len(T)):
         T[i] = max(T[i])
@@ -62,7 +60,7 @@ def to_table(df, num):
     for i in range(I.shape[1]):
         I[:, i] = max(I[:, i])
 
-    result = T, I, X, X_features, msk
+    result = T, I, X, X_selected, msk
 
     if has_label:
         result += (label,)
