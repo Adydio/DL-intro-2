@@ -1,5 +1,5 @@
 import torch
-from select import featureSelector
+from ..select import featureSelector
 
 
 def to_table(df, num):
@@ -48,9 +48,9 @@ def to_table(df, num):
 
     if has_label:
         X, label = X[:, :, : -1], X[:, :, -1]
-        len_features = df.columns - 1
+        len_features = len(df.columns) - 1
     else:
-        len_features = df.columns
+        len_features = len(df.columns)
 
     X, X_selected = X[:, :, : len_features], X[:, :, len_features:]
     # 填充 T
