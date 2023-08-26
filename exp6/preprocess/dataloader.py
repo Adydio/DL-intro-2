@@ -64,14 +64,14 @@ class DataLoader:
 
 
 # 这个应该是咱们要写的最关键部分
-def get_timestep_data_iter():
+def get_timestep_data_iter(*data, batch_size, time_step, device, **kwargs):
     '''
     关于迭代器生成器的一些要求：
     * 参数列表形如 get_iter(*data, batch_size, time_step, device, **kwargs)
       其中 *data 处会传入数据集构成的元组，格式和 Dataset 构建时转成 torch 张量时的存储格式相同
+      相当于data就是to_table这个函数的输出，加星号就是解包（个人理解）
     * 生成的迭代器的格式需要对接 models.structure.BasicExcutor.forward 的输入以及 train.loss.CombinedLoss 的输入
       具体来说在 train 中希望通过下面的代码计算由迭代器生成的小批次数据 X 中损失
-
       X, y = X[: -1], X[-1]
       l = loss(net(*X), *y)
     * 每个批次的数据需要在时间步上对齐，例如 features[1, t, :] 和 features[3, t, :] 需要在同一天
